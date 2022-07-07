@@ -106,9 +106,10 @@ class ImageGallerySaverPlugin : FlutterPlugin, MethodCallHandler {
             fos.close()
             context!!.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, fileUri))
             bmp.recycle()
-            SaveResultModel(fileUri.toString().isNotEmpty(), fileUri.toString(), null).toHashMap()
+            val path = Util.getPath(context, fileUri)
+            SaveResultModel(fileUri.toString().isNotEmpty(), fileUri.toString(), path,null).toHashMap()
         } catch (e: IOException) {
-            SaveResultModel(false, null, e.toString()).toHashMap()
+            SaveResultModel(false, null, null, e.toString()).toHashMap()
         }
     }
 
@@ -132,9 +133,10 @@ class ImageGallerySaverPlugin : FlutterPlugin, MethodCallHandler {
             fileInputStream.close()
 
             context!!.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, fileUri))
-            SaveResultModel(fileUri.toString().isNotEmpty(), fileUri.toString(), null).toHashMap()
+            val path = Util.getPath(context, fileUri)
+            SaveResultModel(fileUri.toString().isNotEmpty(), fileUri.toString(), path,null).toHashMap()
         } catch (e: IOException) {
-            SaveResultModel(false, null, e.toString()).toHashMap()
+            SaveResultModel(false, null, null, e.toString()).toHashMap()
         }
     }
 
@@ -157,11 +159,13 @@ class ImageGallerySaverPlugin : FlutterPlugin, MethodCallHandler {
 }
 
 class SaveResultModel(var isSuccess: Boolean,
+                      var fileUri: String? = null,
                       var filePath: String? = null,
                       var errorMessage: String? = null) {
     fun toHashMap(): HashMap<String, Any?> {
         val hashMap = HashMap<String, Any?>()
         hashMap["isSuccess"] = isSuccess
+        hashMap["fileUri"] = fileUri
         hashMap["filePath"] = filePath
         hashMap["errorMessage"] = errorMessage
         return hashMap
